@@ -6,6 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 
 @SpringBootApplication
 public class AppService {
@@ -15,12 +16,17 @@ public class AppService {
 	}
 	
 	@Bean
-	CommandLineRunner start(StudentRepository studentRepository) {
+	CommandLineRunner start(StudentRepository studentRepository, RepositoryRestConfiguration restConfiguration) {
 		return args -> {
-			studentRepository.save(new Student(null, "Hassan", "hassan@gmail.com", new Date()));
+			
+			restConfiguration.exposeIdsFor(Student.class);
+			studentRepository.save(new Student(null, "Fede", "Fede@gmail.com", new Date()));
 			studentRepository.save(new Student(null, "Samir", "samir@gmail.com", new Date()));
 			studentRepository.save(new Student(null, "Ihssan", "ihssan@gmail.com", new Date()));
 			studentRepository.save(new Student(null, "Satra", "satra@gmail.com", new Date()));
+			
+			studentRepository.findAll().forEach(System.out::println);
+			
 		};
 	}
 
