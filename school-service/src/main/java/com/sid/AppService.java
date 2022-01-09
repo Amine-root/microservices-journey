@@ -16,16 +16,20 @@ public class AppService {
 	}
 	
 	@Bean
-	CommandLineRunner start(StudentRepository studentRepository, RepositoryRestConfiguration restConfiguration) {
+	CommandLineRunner start(StudentRepository studentRepository, RepositoryRestConfiguration restConfiguration, LaboratoryRespository labRepo) {
 		return args -> {
 			
 			restConfiguration.exposeIdsFor(Student.class);
-			studentRepository.save(new Student(null, "Fede", "Fede@gmail.com", new Date()));
-			studentRepository.save(new Student(null, "Samir", "samir@gmail.com", new Date()));
-			studentRepository.save(new Student(null, "Ihssan", "ihssan@gmail.com", new Date()));
-			studentRepository.save(new Student(null, "Satra", "satra@gmail.com", new Date()));
+			Laboratory l1 = labRepo.save(new Laboratory("Computer science", null, "contact@gmail.com", null));
+			Laboratory l2 = labRepo.save(new Laboratory("Computer science", null, "contact@gmail.com", null));
+			studentRepository.save(new Student(null, "Fede", "Fede@gmail.com", new Date(), l1));
+			studentRepository.save(new Student(null, "Samir", "samir@gmail.com", new Date(), l2));
+			studentRepository.save(new Student(null, "Ihssan", "ihssan@gmail.com", new Date(), l1));
+			studentRepository.save(new Student(null, "Satra", "satra@gmail.com", new Date(), l1));
 			
-			studentRepository.findAll().forEach(System.out::println);
+			studentRepository.findAll().forEach(st -> {
+				System.out.println(st.getName());
+			});
 			
 		};
 	}
