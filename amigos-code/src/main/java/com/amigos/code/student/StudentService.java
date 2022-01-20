@@ -1,6 +1,10 @@
 package com.amigos.code.student;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +23,51 @@ public class StudentService {
 	public List<Student> getStudents(){
 		return studentRepository.findAll();
 	}
-	
-	
+
+	public void addNewStudent(Student student) {
+		Optional<Student> studentOptional = studentRepository.findStudentByEmail(student.getEmail());
+		if(studentOptional.isPresent()) {
+			throw new IllegalStateException("email taken");
+		}
+		studentRepository.save(student);
+	}
+
+	public void deleteStudent(Long id) {
+//		Optional<Student> id2 = studentRepository.findById(id);
+//		if(id2.isPresent()) {
+//			throw new IllegalStateException("Student Id: "+ id + "is already present!");
+//		}
+//		studentRepository.deleteById
+		
+		boolean exist = studentRepository.existsById(id);
+		if(!exist) {
+			throw new IllegalStateException("Student Id: "+ id + "is already present!");
+		}
+		studentRepository.deleteById(id);
+	}
+
+	@Transactional
+	public void updateStudent(Long studentId, String name, String email) {
+		
+		Student student = studentRepository.findById(studentId)
+		.orElseThrow(()-> new IllegalStateException("Student Id: "+ studentId + "is already present!"));
+		
+		if(name != null && 
+				name.length() > 0 &&
+				!Objects.equals(student.getName(), name)) {
+			student.setName(name);
+		}
+		
+		if(email != null && 
+				email.length() > 0 &&
+				!Objects.equals(student.getEmail(), email)) {
+			student.setEmail(email);
+		}
+		
+		Optional<Student> studentByEmail = studentRepository.findStudentByEmail(email);
+		if(studentByEmail.isPresent()) {
+			throw new IllegalStateException("Email already present!");
+		}
+		student.setEmail(email);
+	}
 }
